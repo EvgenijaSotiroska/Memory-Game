@@ -18,13 +18,16 @@ function generateDeck(pairCount: number): Card[] {
 }
 
 export default function Page() {
-  const [pairCount, setPairCount] = useState<number>(8);
-  const [cards, setCards] = useState<Card[]>(() => generateDeck(8));
+  const [selectedLevel, setSelectedLevel] = useState<number>(1); // 1=8 cards (4 pairs), 2=16 cards (8 pairs), 3=24 cards (12 pairs)
+  const [pairCount, setPairCount] = useState<number>(4);
+  const [gameStarted, setGameStarted] = useState<boolean>(false);
+  const [cards, setCards] = useState<Card[]>([]);
   const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
   const [isBusy, setIsBusy] = useState<boolean>(false);
   const [moves, setMoves] = useState<number>(0);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [endTime, setEndTime] = useState<number | null>(null);
+  const [score, setScore] = useState<number>(0);
 
   const matchedCount = useMemo(() => cards.filter(c => c.isMatched).length, [cards]);
   const finished = matchedCount === cards.length && cards.length > 0;
@@ -32,8 +35,14 @@ export default function Page() {
   useEffect(() => {
     if (finished && startTime && endTime === null) {
       setEndTime(Date.now());
+      addScore(selectedLevel);
     }
   }, [finished, startTime, endTime]);
+
+  function addScore(level: number) {
+    const points = level === 1 ? 50 : level === 2 ? 100 : 150;
+    setScore(prev => prev + points);
+  }
 
   function resetGame(newPairCount = pairCount) {
     setPairCount(newPairCount);
@@ -43,6 +52,18 @@ export default function Page() {
     setMoves(0);
     setStartTime(null);
     setEndTime(null);
+  }
+
+  function levelToPairs(level: number): number {
+    if (level === 1) return 4;
+    if (level === 2) return 8;
+    return 12; // level 3
+  }
+
+  function startGame() {
+    const pairs = levelToPairs(selectedLevel);
+    resetGame(pairs);
+    setGameStarted(true);
   }
 
   function onCardClick(index: number) {
@@ -77,28 +98,40 @@ export default function Page() {
   }  
   return (
     <main>
-      <div style={{ padding: 8, background: '#222', color: '#fff' }}>
-        VERSION 2
-      </div>
       <header className="mb-8 flex items-center justify-between gap-4">
         <h1 className="text-2xl font-semibold">Memory Match</h1>
         <div className="flex flex-wrap items-center gap-2">
-          <select
-            className="rounded-md bg-gray-800 px-3 py-2 text-sm outline-none ring-1 ring-gray-700 hover:ring-gray-600"
-            value={pairCount}
-            onChange={(e) => resetGame(Number(e.target.value))}
-          >
-            {[6, 8, 10, 12].map(n => (
-              <option key={n} value={n}>{n} pairs</option>
-            ))}
-          </select>
-          <button
-            onClick={() => resetGame()}
-            className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-500 active:bg-blue-600 disabled:opacity-50"
-            disabled={isBusy}
-          >
-            Restart
-          </button>
+          <div className="rounded-md bg-purple-600 px-3 py-2 text-sm font-medium text-white">
+            Score: {score}
+          </div>
+          {gameStarted && (
+            <>
+              <div className="rounded-md bg-gray-900 px-3 py-2 text-sm ring-1 ring-gray-800">
+                Level: {selectedLevel}
+              </div>
+              <button
+                onClick={() => resetGame()}
+                className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-500 active:bg-blue-600 disabled:opacity-50"
+                disabled={isBusy}
+              >
+                Restart
+              </button>
+              <button
+                onClick={() => {
+                  setGameStarted(false);
+                  setCards([]);
+                  setFlippedIndices([]);
+                  setIsBusy(false);
+                  setMoves(0);
+                  setStartTime(null);
+                  setEndTime(null);
+                }}
+                className="rounded-md bg-gray-700 px-3 py-2 text-sm font-medium text-white hover:bg-gray-600"
+              >
+                Change Level
+              </button>
+            </>
+          )}
         </div>
       </header>
 
@@ -118,10 +151,14 @@ export default function Page() {
         </div>
       </section>
 
+      {gameStarted && (
       <div
-        className="grid gap-3"
+        className={`grid ${selectedLevel === 3 ? 'gap-2' : 'gap-3'}`}
         style={{
-          gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))',
+          gridTemplateColumns:
+            selectedLevel === 3
+              ? 'repeat(6, minmax(56px, 1fr))'
+              : 'repeat(4, minmax(72px, 1fr))',
         }}
       >
         {cards.map((card, index) => {
@@ -132,7 +169,7 @@ export default function Page() {
               aria-label={`card ${index + 1}`}
               onClick={() => onCardClick(index)}
               disabled={isBusy || card.isMatched}
-              className={`relative aspect-square select-none rounded-xl text-3xl transition-transform duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`relative aspect-square select-none rounded-xl ${selectedLevel === 3 ? 'text-2xl' : 'text-3xl'} transition-transform duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 isFlipped ? 'bg-gray-100 text-gray-900' : 'bg-gray-800 text-gray-100'
               }`}
             >
@@ -143,7 +180,8 @@ export default function Page() {
           );
         })}
       </div>
-      {finished && (
+      )}
+      {gameStarted && finished && (
         <div className="mt-8 rounded-lg bg-green-900/30 p-4 ring-1 ring-green-900/50">
           <p className="mb-2 text-lg font-medium">You won! 🎉</p>
           <p className="text-sm text-gray-300">
@@ -154,6 +192,39 @@ export default function Page() {
               </>
             )}
           </p>
+        </div>
+      )}
+
+      {!gameStarted && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/70">
+          <div className="w-full max-w-sm rounded-2xl bg-gray-900 p-6 ring-1 ring-gray-800">
+            <h2 className="mb-4 text-lg font-semibold">Choose Level</h2>
+            <div className="mb-4 grid gap-2">
+              {[1,2,3].map((lvl) => (
+                <button
+                  key={lvl}
+                  onClick={() => setSelectedLevel(lvl)}
+                  className={`w-full rounded-md px-4 py-2 text-center ring-1 transition ${
+                    selectedLevel === lvl
+                      ? 'bg-blue-600 text-white ring-blue-500'
+                      : 'bg-gray-800 text-gray-100 ring-gray-700 hover:ring-gray-600'
+                  }`}
+                >
+                  {lvl === 1 && 'Level 1'}
+                  {lvl === 2 && 'Level 2'}
+                  {lvl === 3 && 'Level 3'}
+                </button>
+              ))}
+            </div>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={startGame}
+                className="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-500"
+              >
+                Start
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </main>
