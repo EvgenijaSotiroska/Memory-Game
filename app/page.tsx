@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import AuthForm from './components/AuthForm';
+
 
 type Card = {
   id: number;
@@ -18,7 +20,7 @@ function generateDeck(pairCount: number): Card[] {
 }
 
 export default function Page() {
-  const [selectedLevel, setSelectedLevel] = useState<number>(1); // 1=8 cards (4 pairs), 2=16 cards (8 pairs), 3=24 cards (12 pairs)
+  const [selectedLevel, setSelectedLevel] = useState<number>(1); 
   const [pairCount, setPairCount] = useState<number>(4);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [cards, setCards] = useState<Card[]>([]);
@@ -28,6 +30,7 @@ export default function Page() {
   const [startTime, setStartTime] = useState<number | null>(null);
   const [endTime, setEndTime] = useState<number | null>(null);
   const [score, setScore] = useState<number>(0);
+  const [user, setUser] = useState<string | null>(null);
 
   const matchedCount = useMemo(() => cards.filter(c => c.isMatched).length, [cards]);
   const finished = matchedCount === cards.length && cards.length > 0;
@@ -38,6 +41,14 @@ export default function Page() {
       addScore(selectedLevel);
     }
   }, [finished, startTime, endTime]);
+
+  if (!user) {
+    return (
+      <div className="grid place-items-center min-h-screen">
+        <AuthForm onLogin={setUser} />
+      </div>
+    );
+  }
 
   function addScore(level: number) {
     const points = level === 1 ? 50 : level === 2 ? 100 : 150;
@@ -57,7 +68,7 @@ export default function Page() {
   function levelToPairs(level: number): number {
     if (level === 1) return 4;
     if (level === 2) return 8;
-    return 12; // level 3
+    return 12; 
   }
 
   function startGame() {
@@ -93,6 +104,7 @@ export default function Page() {
           setFlippedIndices([]);
           setIsBusy(false);
         }, 900);
+      
       }
     }
   }  
@@ -100,6 +112,7 @@ export default function Page() {
     <main>
       <header className="mb-8 flex items-center justify-between gap-4">
         <h1 className="text-2xl font-semibold">Memory Match</h1>
+        <h2 className="text-2x1 font-semibold">Player: {user}</h2>
         <div className="flex flex-wrap items-center gap-2">
           <div className="rounded-md bg-purple-600 px-3 py-2 text-sm font-medium text-white">
             Score: {score}
@@ -130,6 +143,12 @@ export default function Page() {
               >
                 Change Level
               </button>
+              <button
+      onClick={() => setUser(null)}
+      className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-500"
+    >
+      Logout
+    </button>
             </>
           )}
         </div>
