@@ -8,17 +8,21 @@ export default function AuthForm({ onLogin }: { onLogin: (username: string) => v
   const [isRegister, setIsRegister] = useState(false);
 
   const handleSubmit = async () => {
-    const url = `/api/auth/${isRegister ? 'register' : 'login'}`;
+    const url = `http://127.0.0.1:8000/api/auth/${isRegister ? 'register' : 'login'}/`;
     const res = await fetch(url, {
       method: 'POST',
       body: JSON.stringify({ username, password }),
       headers: { 'Content-Type': 'application/json' },
     });
     const data = await res.json();
-    if (res.ok) {
-        alert(data.message);
-        onLogin(username)
-      } else alert(data.error);
+    
+    if (!isRegister) {
+      localStorage.setItem('accessToken', data.access); 
+      onLogin(username); 
+      alert(data.message ?? 'Success!');}
+     else {
+    alert(data.error ?? JSON.stringify(data));
+  }
     
   };
 
