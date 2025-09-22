@@ -14,11 +14,16 @@ export default function AuthForm({ onLogin }: { onLogin: (username: string) => v
       body: JSON.stringify({ username, password }),
       headers: { 'Content-Type': 'application/json' },
     });
+    if (!res.ok) {
+      const errorData = await res.json();
+      alert(errorData.detail ?? 'Login failed');
+      return;
+    }
     const data = await res.json();
     
     if (!isRegister) {
       localStorage.setItem('accessToken', data.access); 
-      onLogin(username); 
+      onLogin(data.username); 
       alert(data.message ?? 'Success!');}
      else {
     alert(data.error ?? JSON.stringify(data));
