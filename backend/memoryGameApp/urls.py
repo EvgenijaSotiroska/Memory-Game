@@ -8,5 +8,6 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('get_current_user/', views.get_current_user),
-
+    path('get_score/', views.get_score),
+    path('update_score/', views.update_score),
 ]

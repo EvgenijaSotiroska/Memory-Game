@@ -11,6 +11,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import MyTokenObtainPairSerializer
+from .models import Profile
+from .serializers import ProfileSerializer
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -32,3 +34,19 @@ def get_current_user(request):
     return Response({'username': request.user.username})
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_score(request):
+    profile = Profile.objects.get(user=request.user)
+    serializer = ProfileSerializer(profile)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def update_score(request):
+    profile = Profile.objects.get(user=request.user)
+    points = request.data.get('points', 0)
+    profile.score += int(points)
+    profile.save()
+    serializer = ProfileSerializer(profile)
+    return Response(serializer.data)

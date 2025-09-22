@@ -61,6 +61,14 @@ export default function Page() {
   
         const data = await res.json();
         setUser(data.username);
+
+        const scoreRes = await fetch('http://127.0.0.1:8000/api/auth/get_score/', {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+        if (!scoreRes.ok) throw new Error('Failed to fetch score');
+        const scoreData = await scoreRes.json();
+        setScore(scoreData.score);
+  
       } catch (err) {
         console.error(err);
         setUser(null);
@@ -82,10 +90,28 @@ export default function Page() {
       </main>
     );
   }
-  function addScore(level: number) {
+  
+  async function addScore(level: number) {
     const points = level === 1 ? 50 : level === 2 ? 100 : 150;
-    setScore(prev => prev + points);
+    setScore(prev => prev + points); // optimistic update
+  
+    const token = localStorage.getItem('accessToken');
+    if (!token) return;
+  
+    try {
+      await fetch('http://127.0.0.1:8000/api/auth/update_score/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ points }),
+      });
+    } catch (err) {
+      console.error('Failed to update score', err);
+    }
   }
+  
 
   function resetGame(newPairCount = pairCount) {
     setPairCount(newPairCount);
