@@ -19,6 +19,76 @@ body {
 }
 
 
+.react-calendar-custom {
+  width: 100% !important;
+  max-width: 100%;
+  background-color: #1f2937; 
+  gap:0;
+  border-radius: 12px;
+  padding: 16px;
+  font-family: 'Inter', sans-serif;
+  color: black;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}
+
+.react-calendar-custom .react-calendar__tile {
+  border-top: 1px solid lightgray;
+  height: 80px !important;
+  width: 80px !important;
+  line-height: 80px !important;
+  font-size: 1.2rem;
+  border-radius: 0px;
+ color: black;
+}
+
+.react-calendar-custom .react-calendar__tile--active {
+  background-color: #425979 !important;
+  color: white !important;
+  border-radius: 0px;
+}
+
+.react-calendar-custom .react-calendar__tile--now {
+  background-color: gray !important;
+  color: white !important;
+  border-radius:0px;
+}
+.react-calendar-custom .react-calendar__navigation__label {
+  pointer-events: none; 
+  cursor: default;      
+}
+.react-calendar-custom .react-calendar__navigation {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  gap: 12px; 
+}
+
+.react-calendar-custom .react-calendar__navigation button {
+  font-size: 1rem;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #4b5563, #6b7280);
+  color: #f9fafb;
+  border: none;
+}
+
+.react-calendar-custom .react-calendar__navigation button:hover {
+  background-color: #2563eb;
+  color: white;
+}
+
+
+.react-calendar-custom .react-calendar__year-view .react-calendar__tile {
+  display: flex;           
+  align-items: flex-start; 
+  justify-content: center; 
+  padding-top: 8px;        
+  line-height: normal;    
+  border: 1px solid lightgray;
+}
+
+
+
 
 
 
