@@ -17,19 +17,21 @@ cd backend
 ```
 
 2. Create a virtual environment and activate it:
+```bash
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
+```
+-source venv/bin/activate  # Linux/Mac
+-venv\Scripts\activate     # Windows
 
-3. Install dependencies:
+4. Install dependencies:
 pip install -r requirements.txt
 
 
-4. Apply migrations:
+5. Apply migrations:
 python manage.py migrate
 
 
-5. Run the Django development server:
+6. Run the Django development server:
 python manage.py runserver
 By default, the backend will run at http://127.0.0.1:8000.
 
@@ -59,9 +61,9 @@ npm start
 - Use the pairs selector to change difficulty; use Restart to reshuffle.
 
 ## Tech
-Frontend: Next.js App Router, TypeScript, Tailwind CSS
-Backend: Django, Django REST Framework, JWT Authentication
-Database: SQLite
+- Frontend: Next.js App Router, TypeScript, Tailwind CSS
+- Backend: Django, Django REST Framework, JWT Authentication
+- Database: SQLite
 
 
 
