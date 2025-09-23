@@ -20,19 +20,25 @@ cd backend
 ```bash
 python -m venv venv
 ```
--source venv/bin/activate  # Linux/Mac
+```bash
+-source venv/bin/activate  # Linux/Max
 -venv\Scripts\activate     # Windows
+```
 
-4. Install dependencies:
+3. Install dependencies:
+```bash
 pip install -r requirements.txt
+```
 
-
-5. Apply migrations:
+4. Apply migrations:
+```bash
 python manage.py migrate
+```
 
-
-6. Run the Django development server:
+5. Run the Django development server:
+```bash
 python manage.py runserver
+```
 By default, the backend will run at http://127.0.0.1:8000.
 
 ## Install
