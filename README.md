@@ -1,4 +1,4 @@
-# Memory Match (Next.js)
+# Memory Match 
 
 A simple memory card game built with **Next.js (App Router)**, **TypeScript**, **Tailwind CSS**, and a **Django REST API** backend for user authentication and score persistence.
 
