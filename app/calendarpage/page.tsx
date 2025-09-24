@@ -1,11 +1,49 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import AddEventForm from "../components/AddEventForm"; 
+
+type EventType = {
+  id: number;
+  user: string; 
+  date: string;
+  title: string;
+  description: string;
+  attendees: string[];
+};
+
+
 
 export default function CalendarPage() {
   const [view, setView] = useState< "month" | "year">("month");
   const [date, setDate] = useState<Date>(new Date()); 
+  const [events, setEvents] = useState<EventType[]>([]); 
+  const [newEventTitle, setNewEventTitle] = useState('');
+  const [newEventDescription, setNewEventDescription] = useState('');
+
+
+  useEffect(() => {
+    async function fetchEvents() {
+      const token = localStorage.getItem('accessToken');
+      if (!token) return;
+  
+      const dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/api/auth/events/?date=${dateStr}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        setEvents(data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchEvents();
+  }, [date]);
+  
 
   return (
     <div className="p-6 flex-col items-center">
@@ -37,11 +75,19 @@ export default function CalendarPage() {
           setDate(month);   
           setView("month"); 
         }} 
+        
       />
       </div>
 
-      
-      <p className="mt-4">Selected date: {date.toDateString()}</p>
+      <AddEventForm
+        date={date}
+        onSave={(newEvent) => {
+        setEvents((prev) => [...prev, newEvent]);
+      }}
+      onCancel={() => {}}
+      />
     </div>
+
+    
   );
 }

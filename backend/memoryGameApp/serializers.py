@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import Profile
+from .models import Profile, Event
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -33,3 +33,10 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ('score',)
+
+class EventSerializer(serializers.ModelSerializer):
+    attendees = serializers.StringRelatedField(many=True, read_only=True)
+
+    class Meta:
+        model = Event
+        fields = ['date', 'title', 'description', 'attendees']

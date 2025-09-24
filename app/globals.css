@@ -42,13 +42,13 @@ body {
 }
 
 .react-calendar-custom .react-calendar__tile--active {
-  background-color: #425979 !important;
+  border: 1px solid #052757 !important;
   color: white !important;
   border-radius: 0px;
 }
 
 .react-calendar-custom .react-calendar__tile--now {
-  background-color: gray !important;
+  background-color: #396bce !important;
   color: white !important;
   border-radius:0px;
 }
@@ -67,7 +67,7 @@ body {
   font-size: 1rem;
   padding: 8px 12px;
   border-radius: 8px;
-  background: linear-gradient(180deg, #4b5563, #6b7280);
+  background: linear-gradient(180deg, #15488e, #396bce);
   color: #f9fafb;
   border: none;
 }

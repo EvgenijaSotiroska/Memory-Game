@@ -10,4 +10,6 @@ urlpatterns = [
     path('get_current_user/', views.get_current_user),
     path('get_score/', views.get_score),
     path('update_score/', views.update_score),
+    path('events/', views.get_events, name='get_events'),
+    path('events/add/', views.add_event, name='add_event'),
 ]

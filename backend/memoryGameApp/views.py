@@ -1,6 +1,5 @@
 from django.shortcuts import render
-
-# Create your views here.
+from datetime import datetime
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -11,8 +10,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import MyTokenObtainPairSerializer
-from .models import Profile
-from .serializers import ProfileSerializer
+from .models import Profile, Event
+from .serializers import ProfileSerializer, EventSerializer
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -50,3 +49,29 @@ def update_score(request):
     profile.save()
     serializer = ProfileSerializer(profile)
     return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_events(request):
+    date_str = request.GET.get('date')  # e.g., "2025-09-25"
+    
+    if date_str:
+        try:
+            date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
+            events = Event.objects.filter(date=date_obj)
+        except ValueError:
+            return Response({"detail": "Invalid date format. Use YYYY-MM-DD."}, status=400)
+    else:
+        events = Event.objects.all()
+    
+    serializer = EventSerializer(events, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_event(request):
+    serializer = EventSerializer(data=request.data)
+    if serializer.is_valid():
+        return Response(serializer.data, status=201)
+    print(serializer.errors)
+    return Response(serializer.errors, status=400)
