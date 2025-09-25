@@ -76,3 +76,18 @@ def add_event(request):
         return Response(serializer.data, status=201)
     print(serializer.errors)
     return Response(serializer.errors, status=400)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def apply_event(request, event_id):
+    try:
+        event = Event.objects.get(id=event_id)
+    except Event.DoesNotExist:
+        return Response({"detail": "Event not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.user not in event.attendees.all():
+        event.attendees.add(request.user)
+        event.save()
+    serializer = EventSerializer(event)
+    return Response(serializer.data, status=200)

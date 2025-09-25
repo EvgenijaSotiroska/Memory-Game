@@ -40,6 +40,30 @@ export default function CalendarPage() {
     }
     fetchEvents();
   }, [date]);
+
+  const handleApply = async (eventId: number) => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) return;
+  
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/auth/events/${eventId}/apply/`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      if (!res.ok) {
+        console.error("Failed to apply to event");
+        return;
+      }
+  
+      const updatedEvent = await res.json();
+      setEvents((prev) =>
+        prev.map((e) => (e.id === updatedEvent.id ? updatedEvent : e))
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
   
 
   return (
@@ -55,10 +79,9 @@ export default function CalendarPage() {
         <option className="text-black" value="year">Year</option>
       </select>
 
-      {/* Flex row: calendar (with form) on left, events on right */}
+     
       <div className="flex gap-8 items-start">
-        {/* Left side: calendar + form */}
-        <div className="flex flex-col flex-[2]"> {/* wider calendar */}
+        <div className="flex flex-col flex-[2]"> 
           <Calendar
             className="react-calendar-custom mb-4"
             onChange={(val) => {
@@ -75,7 +98,6 @@ export default function CalendarPage() {
             }}
           />
 
-          {/* Form stays under calendar */}
           <AddEventForm
             date={date}
             onSave={(newEvent) => {
@@ -85,7 +107,7 @@ export default function CalendarPage() {
           />
         </div>
 
-        {/* Right side: events list */}
+        
         <div className="flex-1">
           <h2 className="text-xl font-semibold mb-2">
             Events on {date.toDateString()}
@@ -94,9 +116,11 @@ export default function CalendarPage() {
             <ul className="space-y-3">
               {events.map((event) => (
                 <li
-                  key={event.id}
-                  className="p-3 border rounded bg-gray-100 text-black"
-                >
+                key={event.id}
+                className="p-3 border rounded bg-gray-100 text-black flex justify-between items-start"
+              >
+                
+                <div>
                   <h3 className="font-bold">{event.title}</h3>
                   <p>{event.description}</p>
                   <p className="text-sm text-gray-600">
@@ -105,7 +129,15 @@ export default function CalendarPage() {
                       ? event.attendees.join(", ")
                       : "None"}
                   </p>
-                </li>
+                </div>
+              
+                <button
+                  onClick={() => handleApply(event.id)}
+                  className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-500 mt-4"
+                >
+                  Apply
+                </button>
+              </li>
               ))}
             </ul>
           ) : (

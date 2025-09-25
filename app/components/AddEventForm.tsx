@@ -21,6 +21,7 @@ export default function AddEventForm({ date, onSave, onCancel }: AddEventFormPro
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
+
   const handleSubmit = async () => {
     const token = localStorage.getItem("accessToken");
     if (!token) return;
@@ -76,11 +77,15 @@ export default function AddEventForm({ date, onSave, onCancel }: AddEventFormPro
           Save Event
         </button>
         <button
-          onClick={onCancel}
-          className="bg-gray-600 px-4 py-2 rounded hover:bg-gray-500"
-        >
-          Cancel
+          onClick={() => {
+           setTitle("");
+          setDescription("");
+          onCancel(); 
+           }}
+        className="bg-gray-600 px-4 py-2 rounded hover:bg-gray-500">
+           Cancel
         </button>
+
       </div>
     </div>
   );
