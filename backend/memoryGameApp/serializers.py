@@ -36,7 +36,8 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 class EventSerializer(serializers.ModelSerializer):
     attendees = serializers.StringRelatedField(many=True, read_only=True)
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Event
-        fields = ['date', 'title', 'description', 'attendees']
+        fields = ['id','user','date', 'title', 'description', 'attendees']

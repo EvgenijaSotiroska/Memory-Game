@@ -19,9 +19,6 @@ export default function CalendarPage() {
   const [view, setView] = useState< "month" | "year">("month");
   const [date, setDate] = useState<Date>(new Date()); 
   const [events, setEvents] = useState<EventType[]>([]); 
-  const [newEventTitle, setNewEventTitle] = useState('');
-  const [newEventDescription, setNewEventDescription] = useState('');
-
 
   useEffect(() => {
     async function fetchEvents() {
@@ -46,48 +43,76 @@ export default function CalendarPage() {
   
 
   return (
-    <div className="p-6 flex-col items-center">
+    <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Calendar</h1>
 
-    
       <select
         value={view}
-        onChange={(e) => setView(e.target.value as  "month" | "year")}
+        onChange={(e) => setView(e.target.value as "month" | "year")}
         className="border rounded p-2 mb-4 text-black"
       >
         <option className="text-black" value="month">Month</option>
         <option className="text-black" value="year">Year</option>
       </select>
 
-    
-      <div className="calendar-container w-full max-w-4xl">
-      <Calendar
-        className="react-calendar-custom"
-        onChange={(val) => {
-          if (val instanceof Date) {
-            setDate(val); 
-          }
-        }}
-        value={date}
-        view={view}
-        showNeighboringMonth={false}
-        onClickMonth={(month: Date) => {
-          setDate(month);   
-          setView("month"); 
-        }} 
-        
-      />
+      {/* Flex row: calendar (with form) on left, events on right */}
+      <div className="flex gap-8 items-start">
+        {/* Left side: calendar + form */}
+        <div className="flex flex-col flex-[2]"> {/* wider calendar */}
+          <Calendar
+            className="react-calendar-custom mb-4"
+            onChange={(val) => {
+              if (val instanceof Date) {
+                setDate(val);
+              }
+            }}
+            value={date}
+            view={view}
+            showNeighboringMonth={false}
+            onClickMonth={(month: Date) => {
+              setDate(month);
+              setView("month");
+            }}
+          />
+
+          {/* Form stays under calendar */}
+          <AddEventForm
+            date={date}
+            onSave={(newEvent) => {
+              setEvents((prev) => [...prev, newEvent]);
+            }}
+            onCancel={() => {}}
+          />
+        </div>
+
+        {/* Right side: events list */}
+        <div className="flex-1">
+          <h2 className="text-xl font-semibold mb-2">
+            Events on {date.toDateString()}
+          </h2>
+          {events.length > 0 ? (
+            <ul className="space-y-3">
+              {events.map((event) => (
+                <li
+                  key={event.id}
+                  className="p-3 border rounded bg-gray-100 text-black"
+                >
+                  <h3 className="font-bold">{event.title}</h3>
+                  <p>{event.description}</p>
+                  <p className="text-sm text-gray-600">
+                    Attendees:{" "}
+                    {event.attendees && event.attendees.length > 0
+                      ? event.attendees.join(", ")
+                      : "None"}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No events on this date.</p>
+          )}
+        </div>
       </div>
-
-      <AddEventForm
-        date={date}
-        onSave={(newEvent) => {
-        setEvents((prev) => [...prev, newEvent]);
-      }}
-      onCancel={() => {}}
-      />
     </div>
-
-    
   );
 }

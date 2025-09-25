@@ -70,8 +70,9 @@ def get_events(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_event(request):
-    serializer = EventSerializer(data=request.data)
+    serializer = EventSerializer(data=request.data, context={'request': request})
     if serializer.is_valid():
+        serializer.save()
         return Response(serializer.data, status=201)
     print(serializer.errors)
     return Response(serializer.errors, status=400)
