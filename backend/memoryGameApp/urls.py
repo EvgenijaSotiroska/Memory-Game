@@ -12,5 +12,6 @@ urlpatterns = [
     path('update_score/', views.update_score),
     path('events/', views.get_events, name='get_events'),
     path('events/add/', views.add_event, name='add_event'),
-    path('events/<int:event_id>/apply/', views.apply_event, name='apply-event')
+    path('events/<int:event_id>/apply/', views.apply_event, name='apply-event'),
+    path("leaderboard/", views.leaderboard_api, name="leaderboard_api"),
 ]

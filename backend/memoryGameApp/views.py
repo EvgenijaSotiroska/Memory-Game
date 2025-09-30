@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from datetime import datetime
+from django.utils import timezone
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -8,9 +9,11 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from django.db.models import Sum
+from django.http import JsonResponse
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import MyTokenObtainPairSerializer
-from .models import Profile, Event
+from .models import Profile, Event, Score
 from .serializers import ProfileSerializer, EventSerializer
 
 class RegisterView(generics.CreateAPIView):
@@ -43,12 +46,24 @@ def get_score(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def update_score(request):
-    profile = Profile.objects.get(user=request.user)
-    points = request.data.get('points', 0)
-    profile.score += int(points)
+    user = request.user
+    points = int(request.data.get('points', 0))
+    level = int(request.data.get('level', 1))
+
+    score_entry = Score.objects.create(user=user, level=level, points=points)
+
+    profile, created = Profile.objects.get_or_create(user=user)
+    profile.score += points
     profile.save()
-    serializer = ProfileSerializer(profile)
-    return Response(serializer.data)
+
+    return Response({
+        "message": "Score updated successfully",
+        "user": user.username,
+        "level": level,
+        "points": points,
+        "total_score": profile.score,
+    })
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -91,3 +106,31 @@ def apply_event(request, event_id):
         event.save()
     serializer = EventSerializer(event)
     return Response(serializer.data, status=200)
+
+
+
+def leaderboard_api(request):
+    level = request.GET.get("level")
+    period = request.GET.get("period", "all")
+
+    scores = Score.objects.all()
+
+    if level:
+        try:
+            scores = scores.filter(level=int(level))
+        except ValueError:
+            pass
+
+    now = timezone.now()
+    if period == "monthly":
+        scores = scores.filter(created_at__month=now.month, created_at__year=now.year)
+    elif period == "yearly":
+        scores = scores.filter(created_at__year=now.year)
+
+    leaderboard = (
+        scores.values("user__username")
+        .annotate(total_score=Sum("points"))
+        .order_by("-total_score")[:10]
+    )
+
+    return JsonResponse(list(leaderboard), safe=False)

@@ -21,3 +21,18 @@ class Event(models.Model):
     def __str__(self):
         return f"{self.date} - {self.title}"
 
+
+class Score(models.Model):
+    LEVEL_CHOICES = [
+        (1, "Level 1"),
+        (2, "Level 2"),
+        (3, "Level 3"),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    level = models.IntegerField(choices=LEVEL_CHOICES)
+    points = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)  
+
+    def __str__(self):
+        return f"{self.user.username} - Level {self.level} - {self.points} pts"

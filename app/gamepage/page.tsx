@@ -1,5 +1,5 @@
 'use client';
-
+import Link from "next/link"; 
 import { useEffect, useMemo, useState } from 'react';
 import AuthForm from '../components/AuthForm';
 
@@ -93,7 +93,7 @@ export default function Page() {
   
   async function addScore(level: number) {
     const points = level === 1 ? 50 : level === 2 ? 100 : 150;
-    setScore(prev => prev + points); // optimistic update
+    setScore(prev => prev + points); 
   
     const token = localStorage.getItem('accessToken');
     if (!token) return;
@@ -105,7 +105,7 @@ export default function Page() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ points }),
+        body: JSON.stringify({ level, points }),
       });
     } catch (err) {
       console.error('Failed to update score', err);
@@ -170,6 +170,12 @@ export default function Page() {
     <main>
       <header className="mb-8 flex items-center justify-between gap-4">
         <h1 className="text-2xl font-semibold">Memory Match</h1>
+        <Link href="/scorepage">
+      <button
+      className="rounded-md bg-gray-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-500">
+      Leaderboard
+      </button>
+      </Link>
         <h2 className="text-2x1 font-semibold">Player: {user}</h2>
         <div className="flex flex-wrap items-center gap-2">
           <div className="rounded-md bg-purple-600 px-3 py-2 text-sm font-medium text-white">
