@@ -1,6 +1,8 @@
 from django.contrib import admin
 from .models import Event
 from django.urls import path
+import csv
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.contrib.admin.views.main import ChangeList
 from .models import Score
@@ -35,9 +37,6 @@ class ScoreAdmin(admin.ModelAdmin):
         return custom_urls + urls
 
     def export_csv(self, request):
-        import csv
-        from django.http import HttpResponse
-        
         response = HttpResponse(
             content_type='text/csv',
             headers={'Content-Disposition': 'attachment; filename="scores.csv"'},

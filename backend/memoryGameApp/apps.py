@@ -7,4 +7,4 @@ class MemorygameappConfig(AppConfig):
 
     def ready(self):
         import memoryGameApp.signals
-    
+        import memoryGameApp.task

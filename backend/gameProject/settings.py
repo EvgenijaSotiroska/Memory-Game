@@ -15,6 +15,19 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# ]
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_USE_TLS = False
+DEFAULT_FROM_EMAIL = "noreply@example.com"
+EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+EMAIL_HOST_USER = '938618b14cc680'
+EMAIL_HOST_PASSWORD = '42ae019e92a7cb'
+EMAIL_PORT = '2525'
+
+
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -40,6 +53,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'memoryGameApp',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -119,6 +133,16 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+# CRONJOBS = [
+#     ("16 11 * * *", "memoryGameApp.email.send_best_score_email"),  
+# ]
+
+
+
+
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 
 # Static files (CSS, JavaScript, Images)

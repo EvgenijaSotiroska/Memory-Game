@@ -1,0 +1,49 @@
+<mjml>
+  <mj-body background-color="#f9f9f9">
+    
+    <!-- Header -->
+    <mj-section background-color="#4CAF50" padding="20px">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+          Daily Game Update!
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Logo -->
+    <mj-section background-color="#f9f9f9">
+      <mj-column>
+        <mj-image width="100px" src="https://st4.depositphotos.com/33133132/39116/v/450/depositphotos_391165534-stock-illustration-pixel-game-logo-design-vector.jpg" alt="Game Logo" />
+      </mj-column>
+    </mj-section>
+
+    <!-- Main Content -->
+    <mj-section background-color="#ffffff" padding="20px" border-radius="8px">
+      <mj-column>
+      <mj-text font-size="20px" color="#333333" font-weight="bold"> Card Game
+      </mj-text>
+        <mj-text font-size="20px" color="#333333" font-weight="bold">
+          Congratulations {{ username }}!
+        </mj-text>
+        <mj-text font-size="16px" color="#555555">
+          You achieved the best score yesterday with <b>{{ points }}</b> points! 
+        </mj-text>
+        
+
+        <mj-button href="" background-color="#4CAF50" color="#ffffff" font-size="16px" padding="15px 30px" border-radius="5px">
+          Play Again!
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="10px">
+      <mj-column>
+        <mj-text font-size="12px" color="#999999" align="center">
+          © 2025 Card Game. All rights reserved.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+  </mj-body>
+</mjml>

@@ -1,20 +1,16 @@
 from django.shortcuts import render
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils import timezone
 from rest_framework import generics, status
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
-from .serializers import RegisterSerializer
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 from django.db.models import Sum
 from django.http import JsonResponse
-from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import MyTokenObtainPairSerializer
+from .serializers import MyTokenObtainPairSerializer, RegisterSerializer, ProfileSerializer, EventSerializer
 from .models import Profile, Event, Score
-from .serializers import ProfileSerializer, EventSerializer
+
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -134,3 +130,14 @@ def leaderboard_api(request):
     )
 
     return JsonResponse(list(leaderboard), safe=False)
+
+
+
+def get_yesterdays_best_score():
+    today = timezone.now().date()
+    yesterday = today - timedelta(days=1)
+    return (
+        Score.objects.filter(created_at__date=yesterday)
+        .order_by('-points')
+        .first()
+    )
